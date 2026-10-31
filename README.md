@@ -5,6 +5,11 @@ A simple website for a property management company (~75 rental units).
 - **Tenants** report problems through one online form. No account or password needed.
 - **Staff** sign in to see every request, track progress, assign vendors and keep notes.
 
+**Try it live:** https://xc-maintenance-request.vercel.app
+
+- **Tenant form:** open the link and tap *Submit a maintenance request*.
+- **Staff dashboard:** https://xc-maintenance-request.vercel.app/login — sign in as `reviewer@example.com` (password sent by email, not stored here because this repo is public).
+
 ---
 
 ## For tenants
