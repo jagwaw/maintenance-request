@@ -88,6 +88,49 @@ It cleans up obvious things (extra spaces, "Bayview flats" vs "Bayview Flats", d
 
 ---
 
+## Assumptions
+
+Most of these were confirmed with the owner before building (✔).
+
+- ✔ **Tenants don't log in.** They pick their property and unit, and the request is matched to the tenant on file by email **or** phone. They get a reference code, but can't look anything up afterwards.
+- **A request is never turned away** because the contact details don't match — it's accepted and marked *Unverified contact* for staff to check. Real tenants have typos, new numbers, or a family member reporting for them.
+- ✔ **Staff can log requests** that came in by phone, text or in person, and the tool records which.
+- ✔ **One emergency number** — the placeholder (000) 000-0000 — for every property. "Extreme heat" means **above 90°F**.
+- ✔ **Vendors are a short list staff can edit**, and vendors never log in. Vendors are deactivated rather than deleted, so old requests keep their history.
+- ✔ **One staff role** — every staff member can see and change everything, and every change is recorded.
+- ✔ **No email or text notifications** in this first version.
+- **Staff accounts are created by the office**, not by signing up on the website.
+- **Up to 3 photos** per request is enough to show the problem.
+- **Requests for vacant units are allowed** (e.g. a neighbour reporting a leak) but flagged so staff notice.
+
+---
+
+## Questions I'd ask the owner next
+
+1. Should tenants get an email or text confirming their request, with the reference code?
+2. Who can mark a request **Done** — any staff member, or only after the tenant confirms it's fixed?
+3. Should a vendor automatically receive the request details when they're assigned?
+4. Do any properties need a different emergency or after-hours number?
+5. Do requests need a priority (e.g. *urgent* vs *can wait a week*), separate from the emergency phone line?
+6. Should tenants be able to add information or cancel a request after sending it?
+7. How long should requests and photos be kept?
+8. Who keeps the unit and tenant list up to date when people move in or out?
+
+---
+
+## Known issues
+
+- **No limit on how often someone can submit.** A hidden trap stops simple bots, but a determined person could still send many fake requests.
+- **Tenants can't check their request's status** after submitting — they need to contact the office with their reference code.
+- **Photo links expire after 10 minutes** (on purpose, for privacy). If a staff member leaves a request open longer, refreshing the page brings the photos back.
+- **Units and tenants can't be edited on the website yet.** Changes are made by updating the spreadsheet and importing again, or directly in Supabase.
+- **Staff accounts are managed in Supabase**, not on the website.
+- **Some iPhone photos (HEIC format) may not upload from a desktop Chrome browser.** They work from the iPhone itself.
+- **If a photo upload fails halfway**, the tenant sees an error and can try again, but an unused photo may be left in storage. It's private and harmless, just takes a little space.
+- **No automated tests yet.** Every feature was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
+
+---
+
 ## What I'd do next
 
 - **Email/text updates** to tenants when their request is scheduled or done.
@@ -95,6 +138,20 @@ It cleans up obvious things (extra spaces, "Bayview flats" vs "Bayview Flats", d
 - **Limit how often** one person can submit, to stop floods of fake requests.
 - **Manage staff accounts** from the website instead of in Supabase.
 - **Simple reports** — e.g. how long requests take, which units have the most problems.
+
+---
+
+## How this was built (and what AI wrote)
+
+I built this with **Claude Code**, an AI coding assistant, working step by step and committing each feature separately.
+
+**What AI wrote:** most of the code — the pages, the server routes, the database setup, the spreadsheet import script — and the first draft of this README and the flow charts.
+
+**What I did:**
+- Wrote the project brief: the features, the data model and the security rules the AI had to follow.
+- Asked the owner the questions above and turned the answers into decisions.
+- Made the product and design calls along the way — for example the landing page, giving the thank-you page its own link, moving staff pages under `/dashboard`, how errors show next to the field that caused them, and the loading indicators.
+- Reviewed the code and tested every feature by hand in the browser and in Supabase, including the failure cases, and asked for fixes when something was off (e.g. the order of follow-up answers, the emergency notice position, error placement on the vendors page).
 
 ---
 
