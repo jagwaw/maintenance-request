@@ -1,5 +1,13 @@
 <template>
   <form class="space-y-5" @submit.prevent="onSubmit">
+    <div v-if="staff">
+      <label class="label" for="source">How did this request come in?</label>
+      <select id="source" v-model="form.source" class="input" required>
+        <option value="" disabled>Choose one</option>
+        <option v-for="(label, key) in staffSources" :key="key" :value="key">{{ label }}</option>
+      </select>
+    </div>
+
     <div>
       <label class="label" for="property">Property</label>
       <select id="property" v-model="form.propertyId" class="input" required>
@@ -17,7 +25,7 @@
     </div>
 
     <div>
-      <label class="label" for="name">Your name</label>
+      <label class="label" for="name">{{ staff ? 'Tenant name' : 'Your name' }}</label>
       <input id="name" v-model="form.contactName" class="input" required maxlength="100" autocomplete="name" />
     </div>
     <div class="grid gap-5 sm:grid-cols-2">
@@ -57,7 +65,7 @@
     <p class="-mt-3 text-sm text-gray-500">Email or phone — at least one, so we can reach you.</p>
 
     <!-- Honeypot: invisible to people and screen readers -->
-    <div class="hidden" aria-hidden="true">
+    <div v-if="!staff" class="hidden" aria-hidden="true">
       <label for="website">Website</label>
       <input id="website" v-model="form.website" tabindex="-1" autocomplete="off" />
     </div>
@@ -81,7 +89,7 @@
         <EmergencyNotice v-if="q.emergencyIf && form.details[q.id] === q.emergencyIf" class="mt-3" />
       </div>
 
-      <SelfCheck v-if="category.selfCheck && !selfCheckDone" :steps="category.selfCheck" @continue="selfCheckDone = true" />
+      <SelfCheck v-if="!staff && category.selfCheck && !selfCheckDone" :steps="category.selfCheck" @continue="selfCheckDone = true" />
     </template>
 
     <template v-if="showRest">
@@ -114,25 +122,32 @@
 
       <p v-if="error" role="alert" class="text-red-700">{{ error }}</p>
       <button type="submit" class="btn-primary w-full" :disabled="submitting">
-        {{ submitting ? 'Sending…' : 'Submit request' }}
+        <template v-if="staff">{{ submitting ? 'Saving…' : 'Create request' }}</template>
+        <template v-else>{{ submitting ? 'Sending…' : 'Submit request' }}</template>
       </button>
     </template>
   </form>
 </template>
 
 <script setup lang="ts">
-import { CATEGORIES } from '~~/config/maintenance'
+import { CATEGORIES, SOURCES } from '~~/config/maintenance'
 
 export type RequestPayload = Record<string, unknown>
 
 const props = defineProps<{
   /** Posts the request; throw to show an error. */
   submit: (data: RequestPayload, photos: Blob[]) => Promise<void>
+  /** Staff entering a request for a tenant: asks for the source, skips the self-check and honeypot. */
+  staff?: boolean
 }>()
+
+// Every source except the online form itself.
+const staffSources = Object.fromEntries(Object.entries(SOURCES).filter(([key]) => key !== 'form'))
 
 const { data: properties } = await useFetch('/api/properties')
 
 const form = reactive({
+  source: '', // staff only
   propertyId: '',
   unitId: '',
   contactName: '',
@@ -158,7 +173,7 @@ const phoneMsg = computed(() => (touched.phone ? phoneError(form.contactPhone) :
 
 const units = computed(() => properties.value?.find((p) => p.id === form.propertyId)?.units ?? [])
 const category = computed(() => CATEGORIES[form.category])
-const showRest = computed(() => category.value && (!category.value.selfCheck || selfCheckDone.value))
+const showRest = computed(() => category.value && (props.staff || !category.value.selfCheck || selfCheckDone.value))
 
 watch(() => form.propertyId, () => (form.unitId = ''))
 watch(() => form.category, () => {
