@@ -1,12 +1,14 @@
 # Tenant form — how it works
 
-Pages: `/` (form), `/submitted/[ref]` (success) · Component: `components/RequestForm.vue` · API: `POST /api/requests`
+Pages: `/` (landing), `/request` (form), `/request/submitted/[ref]` (success) · Component: `components/RequestForm.vue` · API: `POST /api/requests`
 
 ## What the tenant sees
 
 ```mermaid
 flowchart TD
-    A([Tenant opens the form]) --> B[Emergency notice<br/>always at the top]
+    START([Tenant opens /]) --> LAND[Landing page<br/>emergency notice + 'Submit a maintenance request']
+    LAND --> A([Form at /request])
+    A --> B[Emergency notice<br/>always at the top]
     B --> C[Pick property → unit]
     C --> D[Name + email and/or phone]
     D --> E[Pick category]
@@ -22,7 +24,7 @@ flowchart TD
     L --> M[Photos, up to 3<br/>resized to 1600px JPEG in the browser]
     M --> N[Permission to enter<br/>+ optional pets, best times]
     N --> O[Submit]
-    O --> P([Success page /submitted/MR-7KQ2X9<br/>shows the reference code])
+    O --> P([Success page /request/submitted/MR-7KQ2X9<br/>shows the reference code])
     P -- Submit another request --> A
 ```
 

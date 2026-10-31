@@ -20,6 +20,6 @@ useHead({ title: 'Request received' })
     </div>
     <p v-else class="text-gray-700">That doesn't look like a valid reference code.</p>
 
-    <NuxtLink to="/" class="btn-primary block w-full text-center">Submit another request</NuxtLink>
+    <NuxtLink to="/request" class="btn-primary block w-full text-center">Submit another request</NuxtLink>
   </main>
 </template>
