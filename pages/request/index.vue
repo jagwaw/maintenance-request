@@ -5,7 +5,7 @@
     <RequestForm :submit="submit" />
 
     <p class="text-center text-sm">
-      <NuxtLink to="/staff/login" class="text-gray-500 hover:underline">Staff sign in</NuxtLink>
+      <NuxtLink to="/login" class="text-gray-500 hover:underline">Staff sign in</NuxtLink>
     </p>
   </main>
 </template>

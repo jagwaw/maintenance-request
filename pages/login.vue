@@ -37,7 +37,7 @@ async function signIn() {
       await supabase.auth.signOut()
       throw new Error("This account doesn't have staff access.")
     }
-    await navigateTo('/staff')
+    await navigateTo('/dashboard')
   } catch (e: any) {
     error.value = e.message
   } finally {

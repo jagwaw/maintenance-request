@@ -4,7 +4,7 @@
     <main class="mx-auto max-w-6xl space-y-4 p-4">
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-xl font-semibold">Requests</h1>
-        <NuxtLink to="/staff/requests/new" class="btn-primary">New request</NuxtLink>
+        <NuxtLink to="/dashboard/requests/new" class="btn-primary">New request</NuxtLink>
       </div>
 
       <div class="grid gap-3 sm:grid-cols-3">
@@ -39,7 +39,7 @@
           <tbody>
             <tr v-for="r in requests" :key="r.id" class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
               <td class="px-3 py-2 font-mono">
-                <NuxtLink :to="`/staff/requests/${r.id}`" class="text-blue-700 hover:underline">{{ r.refCode }}</NuxtLink>
+                <NuxtLink :to="`/dashboard/requests/${r.id}`" class="text-blue-700 hover:underline">{{ r.refCode }}</NuxtLink>
               </td>
               <td class="whitespace-nowrap px-3 py-2 text-gray-600">{{ formatDate(r.createdAt) }}</td>
               <td class="px-3 py-2">

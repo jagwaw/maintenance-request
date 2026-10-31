@@ -2,7 +2,7 @@
   <div>
     <StaffHeader />
     <main class="mx-auto max-w-6xl space-y-4 p-4 pb-16">
-      <NuxtLink to="/staff" class="text-sm text-blue-700 hover:underline">← All requests</NuxtLink>
+      <NuxtLink to="/dashboard" class="text-sm text-blue-700 hover:underline">← All requests</NuxtLink>
 
       <p v-if="error" class="text-red-700">{{ error.statusCode === 404 ? 'Request not found.' : "Couldn't load this request." }}</p>
 

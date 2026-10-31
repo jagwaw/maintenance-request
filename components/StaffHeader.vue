@@ -3,8 +3,8 @@
     <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
       <span class="font-semibold">Maintenance</span>
       <nav class="flex gap-4 text-sm">
-        <NuxtLink to="/staff" class="hover:underline" exact-active-class="font-semibold">Requests</NuxtLink>
-        <NuxtLink to="/staff/vendors" class="hover:underline" active-class="font-semibold">Vendors</NuxtLink>
+        <NuxtLink to="/dashboard" class="hover:underline" exact-active-class="font-semibold">Requests</NuxtLink>
+        <NuxtLink to="/dashboard/vendors" class="hover:underline" active-class="font-semibold">Vendors</NuxtLink>
       </nav>
       <div class="ml-auto flex items-center gap-3 text-sm">
         <span class="text-gray-600">{{ staff?.name }}</span>
@@ -17,10 +17,10 @@
 <script setup lang="ts">
 const supabase = useSupabaseClient()
 const { data: staff, error } = await useFetch('/api/staff/me')
-if (error.value) await navigateTo('/staff/login')
+if (error.value) await navigateTo('/login')
 
 async function signOut() {
   await supabase.auth.signOut()
-  await navigateTo('/staff/login')
+  await navigateTo('/login')
 }
 </script>
