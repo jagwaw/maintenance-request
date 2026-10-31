@@ -1,0 +1,26 @@
+{
+  "name": "maintenance-request",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "import:units": "tsx scripts/import-units.ts"
+  },
+  "dependencies": {
+    "@nuxtjs/supabase": "^2.1.0",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "nuxt": "^3.21.11",
+    "vue": "^3.5.44",
+    "vue-router": "^4.6.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.14"
+  }
+}
