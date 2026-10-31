@@ -29,6 +29,11 @@ const selfCheckDone = ref(false)
 const submitting = ref(false)
 const error = ref('')
 
+// Contact errors show once the field has been left (or on submit).
+const touched = reactive({ email: false, phone: false })
+const emailMsg = computed(() => (touched.email ? emailError(form.contactEmail) : ''))
+const phoneMsg = computed(() => (touched.phone ? phoneError(form.contactPhone) : ''))
+
 const units = computed(() => properties.value?.find((p) => p.id === form.propertyId)?.units ?? [])
 const category = computed(() => CATEGORIES[form.category])
 const showRest = computed(() => category.value && (!category.value.selfCheck || selfCheckDone.value))
@@ -41,6 +46,11 @@ watch(() => form.category, () => {
 
 async function onSubmit() {
   error.value = ''
+  touched.email = touched.phone = true
+  if (emailMsg.value || phoneMsg.value) {
+    error.value = 'Please fix the email or phone number above.'
+    return
+  }
   if (!form.contactEmail.trim() && !form.contactPhone.trim()) {
     error.value = 'Please give an email or phone number so we can reach you.'
     return
@@ -84,11 +94,35 @@ async function onSubmit() {
     <div class="grid gap-5 sm:grid-cols-2">
       <div>
         <label class="label" for="email">Email</label>
-        <input id="email" v-model="form.contactEmail" type="email" class="input" maxlength="254" autocomplete="email" />
+        <input
+          id="email"
+          v-model="form.contactEmail"
+          type="email"
+          class="input"
+          :class="{ 'border-red-500': emailMsg }"
+          maxlength="254"
+          autocomplete="email"
+          :aria-invalid="Boolean(emailMsg)"
+          aria-describedby="email-error"
+          @blur="touched.email = true"
+        />
+        <p id="email-error" class="mt-1 text-sm text-red-700">{{ emailMsg }}</p>
       </div>
       <div>
         <label class="label" for="phone">Phone</label>
-        <input id="phone" v-model="form.contactPhone" type="tel" class="input" maxlength="30" autocomplete="tel" />
+        <input
+          id="phone"
+          v-model="form.contactPhone"
+          type="tel"
+          class="input"
+          :class="{ 'border-red-500': phoneMsg }"
+          maxlength="30"
+          autocomplete="tel"
+          :aria-invalid="Boolean(phoneMsg)"
+          aria-describedby="phone-error"
+          @blur="touched.phone = true"
+        />
+        <p id="phone-error" class="mt-1 text-sm text-red-700">{{ phoneMsg }}</p>
       </div>
     </div>
     <p class="-mt-3 text-sm text-gray-500">Email or phone — at least one, so we can reach you.</p>

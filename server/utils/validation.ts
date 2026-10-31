@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { CATEGORIES } from '~~/config/maintenance'
+import { emailError, phoneError } from '~~/utils/contact'
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().transform((v) => v || null)
 
@@ -8,8 +9,8 @@ export const requestFieldsSchema = z
   .object({
     unitId: z.uuid(),
     contactName: z.string().trim().min(1).max(100),
-    contactEmail: z.string().trim().toLowerCase().pipe(z.email().max(254)).optional(),
-    contactPhone: z.string().trim().max(30).regex(/^[\d\s()+.-]*$/, 'Invalid phone').optional(),
+    contactEmail: z.string().trim().toLowerCase().refine((e) => !emailError(e), 'Invalid email').optional(),
+    contactPhone: z.string().trim().max(30).refine((p) => !phoneError(p), 'Invalid phone').optional(),
     category: z.string().refine((c) => c in CATEGORIES, 'Unknown category'),
     details: z.record(z.string(), z.string().trim().max(500)).default({}),
     description: z.string().trim().min(1).max(2000),
