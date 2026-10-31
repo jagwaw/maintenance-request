@@ -115,6 +115,11 @@ alter table requests       enable row level security;
 alter table request_photos enable row level security;
 alter table request_events enable row level security;
 
+-- Only the service role (our server routes) may touch the tables at all.
+-- Explicit so it holds whether or not "Automatically expose new tables" is on.
+revoke all on all tables in schema public from anon, authenticated;
+grant select, insert, update, delete on all tables in schema public to service_role;
+
 -- Private photo bucket (no storage policies either → only the service role can use it).
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('request-photos', 'request-photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
