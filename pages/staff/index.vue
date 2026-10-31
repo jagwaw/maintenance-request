@@ -48,7 +48,7 @@ const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { da
       </div>
 
       <p v-if="error" class="text-red-700">Couldn't load requests.</p>
-      <div v-else class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div v-else class="overflow-x-auto rounded-lg border border-gray-200 bg-white transition-opacity" :class="{ 'opacity-50': pending }" :aria-busy="pending">
         <table class="w-full text-left text-sm">
           <thead class="border-b border-gray-200 bg-gray-50 text-gray-600">
             <tr>
