@@ -1,6 +1,6 @@
 # Tenant form — how it works
 
-Page: `/` · Component: `components/RequestForm.vue` · API: `POST /api/requests`
+Pages: `/` (form), `/submitted/[ref]` (success) · Component: `components/RequestForm.vue` · API: `POST /api/requests`
 
 ## What the tenant sees
 
@@ -22,7 +22,8 @@ flowchart TD
     L --> M[Photos, up to 3<br/>resized to 1600px JPEG in the browser]
     M --> N[Permission to enter<br/>+ optional pets, best times]
     N --> O[Submit]
-    O --> P([Reference code screen<br/>e.g. MR-7KQ2X9])
+    O --> P([Success page /submitted/MR-7KQ2X9<br/>shows the reference code])
+    P -- Submit another request --> A
 ```
 
 ## What happens on submit (server)
