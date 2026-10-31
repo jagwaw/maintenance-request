@@ -31,7 +31,6 @@ const error = ref('')
 
 const units = computed(() => properties.value?.find((p) => p.id === form.propertyId)?.units ?? [])
 const category = computed(() => CATEGORIES[form.category])
-const showEmergency = computed(() => category.value?.followUps.some((q) => q.emergencyIf && form.details[q.id] === q.emergencyIf))
 const showRest = computed(() => category.value && (!category.value.selfCheck || selfCheckDone.value))
 
 watch(() => form.propertyId, () => (form.unitId = ''))
@@ -116,9 +115,8 @@ async function onSubmit() {
           <option v-for="o in q.options" :key="o" :value="o">{{ o }}</option>
         </select>
         <input v-else :id="q.id" v-model="form.details[q.id]" class="input" maxlength="500" />
+        <EmergencyNotice v-if="q.emergencyIf && form.details[q.id] === q.emergencyIf" class="mt-3" />
       </div>
-
-      <EmergencyNotice v-if="showEmergency" />
 
       <SelfCheck v-if="category.selfCheck && !selfCheckDone" :steps="category.selfCheck" @continue="selfCheckDone = true" />
     </template>
