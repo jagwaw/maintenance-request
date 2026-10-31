@@ -15,5 +15,9 @@ async function submit(data: RequestPayload, photos: Blob[]) {
     <h1 class="text-2xl font-semibold">Maintenance request</h1>
     <EmergencyNotice />
     <RequestForm :submit="submit" />
+
+    <p class="text-center text-sm">
+      <NuxtLink to="/staff/login" class="text-gray-500 hover:underline">Staff sign in</NuxtLink>
+    </p>
   </main>
 </template>
