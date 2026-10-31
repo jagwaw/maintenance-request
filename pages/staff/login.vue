@@ -29,9 +29,9 @@ async function signIn() {
 </script>
 
 <template>
-  <main class="mx-auto max-w-sm space-y-6 p-4 pt-16">
+  <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
     <h1 class="text-2xl font-semibold">Staff sign in</h1>
-    <form class="space-y-4" @submit.prevent="signIn">
+    <form class="space-y-5" @submit.prevent="signIn">
       <div>
         <label class="label" for="email">Email</label>
         <input id="email" v-model="email" type="email" class="input" required autocomplete="username" />
