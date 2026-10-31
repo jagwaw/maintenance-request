@@ -1,74 +1,3 @@
-<script setup lang="ts">
-import { CATEGORIES } from '~~/config/maintenance'
-
-export type RequestPayload = Record<string, unknown>
-
-const props = defineProps<{
-  /** Posts the request; throw to show an error. */
-  submit: (data: RequestPayload, photos: Blob[]) => Promise<void>
-}>()
-
-const { data: properties } = await useFetch('/api/properties')
-
-const form = reactive({
-  propertyId: '',
-  unitId: '',
-  contactName: '',
-  contactEmail: '',
-  contactPhone: '',
-  category: '',
-  details: {} as Record<string, string>,
-  description: '',
-  permissionToEnter: null as boolean | null,
-  pets: '',
-  bestTimes: '',
-  website: '', // honeypot — hidden from people, bots fill it in
-})
-const photos = ref<Blob[]>([])
-const selfCheckDone = ref(false)
-const submitting = ref(false)
-const error = ref('')
-
-// Contact errors show once the field has been left (or on submit).
-const touched = reactive({ email: false, phone: false })
-const emailMsg = computed(() => (touched.email ? emailError(form.contactEmail) : ''))
-const phoneMsg = computed(() => (touched.phone ? phoneError(form.contactPhone) : ''))
-
-const units = computed(() => properties.value?.find((p) => p.id === form.propertyId)?.units ?? [])
-const category = computed(() => CATEGORIES[form.category])
-const showRest = computed(() => category.value && (!category.value.selfCheck || selfCheckDone.value))
-
-watch(() => form.propertyId, () => (form.unitId = ''))
-watch(() => form.category, () => {
-  form.details = {}
-  selfCheckDone.value = false
-})
-
-async function onSubmit() {
-  error.value = ''
-  touched.email = touched.phone = true
-  if (emailMsg.value || phoneMsg.value) {
-    error.value = 'Please fix the email or phone number above.'
-    return
-  }
-  if (!form.contactEmail.trim() && !form.contactPhone.trim()) {
-    error.value = 'Please give an email or phone number so we can reach you.'
-    return
-  }
-  // Send only filled-in fields; the server validates everything again.
-  const { propertyId, ...rest } = form
-  const data = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== ''))
-  submitting.value = true
-  try {
-    await props.submit(data, photos.value)
-  } catch (e: any) {
-    error.value = e?.data?.statusMessage || e?.statusMessage || 'Something went wrong. Please try again.'
-  } finally {
-    submitting.value = false
-  }
-}
-</script>
-
 <template>
   <form class="space-y-5" @submit.prevent="onSubmit">
     <div>
@@ -190,3 +119,74 @@ async function onSubmit() {
     </template>
   </form>
 </template>
+
+<script setup lang="ts">
+import { CATEGORIES } from '~~/config/maintenance'
+
+export type RequestPayload = Record<string, unknown>
+
+const props = defineProps<{
+  /** Posts the request; throw to show an error. */
+  submit: (data: RequestPayload, photos: Blob[]) => Promise<void>
+}>()
+
+const { data: properties } = await useFetch('/api/properties')
+
+const form = reactive({
+  propertyId: '',
+  unitId: '',
+  contactName: '',
+  contactEmail: '',
+  contactPhone: '',
+  category: '',
+  details: {} as Record<string, string>,
+  description: '',
+  permissionToEnter: null as boolean | null,
+  pets: '',
+  bestTimes: '',
+  website: '', // honeypot — hidden from people, bots fill it in
+})
+const photos = ref<Blob[]>([])
+const selfCheckDone = ref(false)
+const submitting = ref(false)
+const error = ref('')
+
+// Contact errors show once the field has been left (or on submit).
+const touched = reactive({ email: false, phone: false })
+const emailMsg = computed(() => (touched.email ? emailError(form.contactEmail) : ''))
+const phoneMsg = computed(() => (touched.phone ? phoneError(form.contactPhone) : ''))
+
+const units = computed(() => properties.value?.find((p) => p.id === form.propertyId)?.units ?? [])
+const category = computed(() => CATEGORIES[form.category])
+const showRest = computed(() => category.value && (!category.value.selfCheck || selfCheckDone.value))
+
+watch(() => form.propertyId, () => (form.unitId = ''))
+watch(() => form.category, () => {
+  form.details = {}
+  selfCheckDone.value = false
+})
+
+async function onSubmit() {
+  error.value = ''
+  touched.email = touched.phone = true
+  if (emailMsg.value || phoneMsg.value) {
+    error.value = 'Please fix the email or phone number above.'
+    return
+  }
+  if (!form.contactEmail.trim() && !form.contactPhone.trim()) {
+    error.value = 'Please give an email or phone number so we can reach you.'
+    return
+  }
+  // Send only filled-in fields; the server validates everything again.
+  const { propertyId, ...rest } = form
+  const data = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== ''))
+  submitting.value = true
+  try {
+    await props.submit(data, photos.value)
+  } catch (e: any) {
+    error.value = e?.data?.statusMessage || e?.statusMessage || 'Something went wrong. Please try again.'
+  } finally {
+    submitting.value = false
+  }
+}
+</script>

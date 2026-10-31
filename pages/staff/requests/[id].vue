@@ -1,68 +1,3 @@
-<script setup lang="ts">
-import { CATEGORIES, SOURCES, STATUSES } from '~~/config/maintenance'
-
-const route = useRoute()
-const id = String(route.params.id)
-const { data: request, error, refresh } = await useFetch(`/api/staff/requests/${id}`)
-const { data: vendors } = await useFetch('/api/staff/vendors')
-
-useHead({ title: () => request.value?.refCode ?? 'Request' })
-
-const category = computed(() => (request.value ? CATEGORIES[request.value.category] : undefined))
-// Answers in the same order as the questions in config (the database doesn't keep key order).
-const answers = computed(() => {
-  const details = request.value?.details ?? {}
-  const order = category.value?.followUps.map((q) => q.id) ?? []
-  return Object.keys(details)
-    .sort((a, b) => (order.indexOf(a) + 1 || Infinity) - (order.indexOf(b) + 1 || Infinity))
-    .map((qid) => ({ question: category.value?.followUps.find((q) => q.id === qid)?.question ?? qid, answer: details[qid] }))
-})
-// Show inactive vendors only if one is already assigned to this request.
-const vendorOptions = computed(() => vendors.value?.filter((v) => v.active || v.id === request.value?.vendorId) ?? [])
-
-// Status + vendor form
-const status = ref('')
-const vendorId = ref('')
-watchEffect(() => {
-  status.value = request.value?.status ?? ''
-  vendorId.value = request.value?.vendorId ?? ''
-})
-const saving = ref(false)
-const saveError = ref('')
-async function save() {
-  saving.value = true
-  saveError.value = ''
-  try {
-    await $fetch(`/api/staff/requests/${id}`, { method: 'PATCH', body: { status: status.value, vendorId: vendorId.value || null } })
-    await refresh()
-  } catch (e: any) {
-    saveError.value = e?.data?.statusMessage || 'Could not save.'
-  } finally {
-    saving.value = false
-  }
-}
-
-// Notes
-const note = ref('')
-const addingNote = ref(false)
-const noteError = ref('')
-async function addNote() {
-  addingNote.value = true
-  noteError.value = ''
-  try {
-    await $fetch(`/api/staff/requests/${id}/notes`, { method: 'POST', body: { note: note.value } })
-    note.value = ''
-    await refresh()
-  } catch (e: any) {
-    noteError.value = e?.data?.statusMessage || 'Could not add note.'
-  } finally {
-    addingNote.value = false
-  }
-}
-
-const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-</script>
-
 <template>
   <div>
     <StaffHeader />
@@ -169,3 +104,68 @@ const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { da
     </main>
   </div>
 </template>
+
+<script setup lang="ts">
+import { CATEGORIES, SOURCES, STATUSES } from '~~/config/maintenance'
+
+const route = useRoute()
+const id = String(route.params.id)
+const { data: request, error, refresh } = await useFetch(`/api/staff/requests/${id}`)
+const { data: vendors } = await useFetch('/api/staff/vendors')
+
+useHead({ title: () => request.value?.refCode ?? 'Request' })
+
+const category = computed(() => (request.value ? CATEGORIES[request.value.category] : undefined))
+// Answers in the same order as the questions in config (the database doesn't keep key order).
+const answers = computed(() => {
+  const details = request.value?.details ?? {}
+  const order = category.value?.followUps.map((q) => q.id) ?? []
+  return Object.keys(details)
+    .sort((a, b) => (order.indexOf(a) + 1 || Infinity) - (order.indexOf(b) + 1 || Infinity))
+    .map((qid) => ({ question: category.value?.followUps.find((q) => q.id === qid)?.question ?? qid, answer: details[qid] }))
+})
+// Show inactive vendors only if one is already assigned to this request.
+const vendorOptions = computed(() => vendors.value?.filter((v) => v.active || v.id === request.value?.vendorId) ?? [])
+
+// Status + vendor form
+const status = ref('')
+const vendorId = ref('')
+watchEffect(() => {
+  status.value = request.value?.status ?? ''
+  vendorId.value = request.value?.vendorId ?? ''
+})
+const saving = ref(false)
+const saveError = ref('')
+async function save() {
+  saving.value = true
+  saveError.value = ''
+  try {
+    await $fetch(`/api/staff/requests/${id}`, { method: 'PATCH', body: { status: status.value, vendorId: vendorId.value || null } })
+    await refresh()
+  } catch (e: any) {
+    saveError.value = e?.data?.statusMessage || 'Could not save.'
+  } finally {
+    saving.value = false
+  }
+}
+
+// Notes
+const note = ref('')
+const addingNote = ref(false)
+const noteError = ref('')
+async function addNote() {
+  addingNote.value = true
+  noteError.value = ''
+  try {
+    await $fetch(`/api/staff/requests/${id}/notes`, { method: 'POST', body: { note: note.value } })
+    note.value = ''
+    await refresh()
+  } catch (e: any) {
+    noteError.value = e?.data?.statusMessage || 'Could not add note.'
+  } finally {
+    addingNote.value = false
+  }
+}
+
+const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+</script>

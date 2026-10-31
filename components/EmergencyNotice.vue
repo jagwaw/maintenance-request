@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { EMERGENCY_PHONE, EMERGENCY_TEXT } from '~~/config/maintenance'
-</script>
-
 <template>
   <div role="alert" class="rounded-lg border border-red-300 bg-red-50 p-4 text-red-900">
     <p class="font-medium">{{ EMERGENCY_TEXT }}</p>
@@ -10,3 +6,7 @@ import { EMERGENCY_PHONE, EMERGENCY_TEXT } from '~~/config/maintenance'
     </a>
   </div>
 </template>
+
+<script setup lang="ts">
+import { EMERGENCY_PHONE, EMERGENCY_TEXT } from '~~/config/maintenance'
+</script>

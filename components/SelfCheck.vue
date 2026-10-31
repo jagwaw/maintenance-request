@@ -1,8 +1,3 @@
-<script setup lang="ts">
-defineProps<{ steps: string[] }>()
-defineEmits<{ continue: [] }>()
-</script>
-
 <template>
   <div class="rounded-lg border border-amber-300 bg-amber-50 p-4">
     <p class="font-medium">Before you submit, try these:</p>
@@ -12,3 +7,8 @@ defineEmits<{ continue: [] }>()
     <button type="button" class="btn-secondary mt-4" @click="$emit('continue')">Still not fixed — continue</button>
   </div>
 </template>
+
+<script setup lang="ts">
+defineProps<{ steps: string[] }>()
+defineEmits<{ continue: [] }>()
+</script>

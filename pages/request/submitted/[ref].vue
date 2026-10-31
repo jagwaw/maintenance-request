@@ -1,12 +1,3 @@
-<script setup lang="ts">
-// Shows only the code from the URL — no request data is fetched, so this page reveals nothing.
-const route = useRoute()
-const refCode = String(route.params.ref).toUpperCase()
-const valid = /^MR-[A-Z2-9]{6}$/.test(refCode)
-
-useHead({ title: 'Request received' })
-</script>
-
 <template>
   <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
     <h1 class="text-2xl font-semibold">Maintenance request</h1>
@@ -23,3 +14,12 @@ useHead({ title: 'Request received' })
     <NuxtLink to="/request" class="btn-primary block w-full text-center">Submit another request</NuxtLink>
   </main>
 </template>
+
+<script setup lang="ts">
+// Shows only the code from the URL — no request data is fetched, so this page reveals nothing.
+const route = useRoute()
+const refCode = String(route.params.ref).toUpperCase()
+const valid = /^MR-[A-Z2-9]{6}$/.test(refCode)
+
+useHead({ title: 'Request received' })
+</script>

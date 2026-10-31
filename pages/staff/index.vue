@@ -1,28 +1,3 @@
-<script setup lang="ts">
-import { CATEGORIES, SOURCES, STATUSES } from '~~/config/maintenance'
-
-useHead({ title: 'Requests' })
-
-// Filters live in the URL so a filtered view can be refreshed or shared.
-const route = useRoute()
-const router = useRouter()
-const filter = (key: string) =>
-  computed({
-    get: () => (route.query[key] as string) || '',
-    set: (value: string) => router.replace({ query: { ...route.query, [key]: value || undefined } }),
-  })
-const propertyId = filter('propertyId')
-const status = filter('status')
-const category = filter('category')
-
-const { data: properties } = await useFetch('/api/properties')
-const { data: requests, pending, error } = await useFetch('/api/staff/requests', {
-  query: computed(() => ({ propertyId: propertyId.value || undefined, status: status.value || undefined, category: category.value || undefined })),
-})
-
-const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-</script>
-
 <template>
   <div>
     <StaffHeader />
@@ -89,3 +64,28 @@ const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { da
     </main>
   </div>
 </template>
+
+<script setup lang="ts">
+import { CATEGORIES, SOURCES, STATUSES } from '~~/config/maintenance'
+
+useHead({ title: 'Requests' })
+
+// Filters live in the URL so a filtered view can be refreshed or shared.
+const route = useRoute()
+const router = useRouter()
+const filter = (key: string) =>
+  computed({
+    get: () => (route.query[key] as string) || '',
+    set: (value: string) => router.replace({ query: { ...route.query, [key]: value || undefined } }),
+  })
+const propertyId = filter('propertyId')
+const status = filter('status')
+const category = filter('category')
+
+const { data: properties } = await useFetch('/api/properties')
+const { data: requests, pending, error } = await useFetch('/api/staff/requests', {
+  query: computed(() => ({ propertyId: propertyId.value || undefined, status: status.value || undefined, category: category.value || undefined })),
+})
+
+const formatDate = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+</script>

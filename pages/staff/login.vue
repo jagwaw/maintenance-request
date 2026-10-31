@@ -1,3 +1,21 @@
+<template>
+  <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
+    <h1 class="text-2xl font-semibold">Staff sign in</h1>
+    <form class="space-y-5" @submit.prevent="signIn">
+      <div>
+        <label class="label" for="email">Email</label>
+        <input id="email" v-model="email" type="email" class="input" required autocomplete="username" />
+      </div>
+      <div>
+        <label class="label" for="password">Password</label>
+        <input id="password" v-model="password" type="password" class="input" required autocomplete="current-password" />
+      </div>
+      <p v-if="error" role="alert" class="text-red-700">{{ error }}</p>
+      <button type="submit" class="btn-primary w-full" :disabled="loading">{{ loading ? 'Signing in…' : 'Sign in' }}</button>
+    </form>
+  </main>
+</template>
+
 <script setup lang="ts">
 const supabase = useSupabaseClient()
 const email = ref('')
@@ -27,21 +45,3 @@ async function signIn() {
   }
 }
 </script>
-
-<template>
-  <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
-    <h1 class="text-2xl font-semibold">Staff sign in</h1>
-    <form class="space-y-5" @submit.prevent="signIn">
-      <div>
-        <label class="label" for="email">Email</label>
-        <input id="email" v-model="email" type="email" class="input" required autocomplete="username" />
-      </div>
-      <div>
-        <label class="label" for="password">Password</label>
-        <input id="password" v-model="password" type="password" class="input" required autocomplete="current-password" />
-      </div>
-      <p v-if="error" role="alert" class="text-red-700">{{ error }}</p>
-      <button type="submit" class="btn-primary w-full" :disabled="loading">{{ loading ? 'Signing in…' : 'Sign in' }}</button>
-    </form>
-  </main>
-</template>
