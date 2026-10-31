@@ -4,20 +4,26 @@
     <main class="mx-auto max-w-xl space-y-4 p-4 pb-16">
       <h1 class="text-xl font-semibold">Vendors</h1>
 
-      <form class="flex gap-2" @submit.prevent="add">
-        <input v-model="newName" class="input" placeholder="New vendor name" maxlength="100" required aria-label="New vendor name" />
-        <button type="submit" class="btn-primary whitespace-nowrap">Add vendor</button>
-      </form>
+      <div>
+        <form class="flex gap-2" @submit.prevent="add">
+          <input v-model="newName" class="input" placeholder="New vendor name" maxlength="100" required aria-label="New vendor name" />
+          <button type="submit" class="btn-primary whitespace-nowrap">Add vendor</button>
+        </form>
+        <p v-if="addError" role="alert" class="mt-1 text-sm text-red-700">{{ addError }}</p>
+      </div>
 
-      <p v-if="error" role="alert" class="text-sm text-red-700">{{ error }}</p>
+      <p v-if="toggleError" role="alert" class="text-sm text-red-700">{{ toggleError }}</p>
 
       <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
         <li v-for="v in vendors" :key="v.id" class="flex flex-wrap items-center gap-2 px-4 py-3">
-          <form v-if="editingId === v.id" class="flex flex-1 gap-2" @submit.prevent="saveEdit">
-            <input v-model="editName" class="input" maxlength="100" required aria-label="Vendor name" />
-            <button type="submit" class="btn-primary">Save</button>
-            <button type="button" class="btn-secondary" @click="editingId = null">Cancel</button>
-          </form>
+          <div v-if="editingId === v.id" class="flex-1">
+            <form class="flex gap-2" @submit.prevent="saveEdit">
+              <input v-model="editName" class="input" maxlength="100" required aria-label="Vendor name" />
+              <button type="submit" class="btn-primary">Save</button>
+              <button type="button" class="btn-secondary" @click="editingId = null">Cancel</button>
+            </form>
+            <p v-if="editError" role="alert" class="mt-1 text-sm text-red-700">{{ editError }}</p>
+          </div>
           <template v-else>
             <span class="flex-1" :class="{ 'text-gray-400': !v.active }">{{ v.name }}</span>
             <Badge v-if="!v.active">Inactive</Badge>
@@ -36,9 +42,12 @@
 useHead({ title: 'Vendors' })
 
 const { data: vendors, refresh } = await useFetch('/api/staff/vendors')
-const error = ref('')
+// Each form shows its own error next to it.
+const addError = ref('')
+const editError = ref('')
+const toggleError = ref('')
 
-async function run(action: () => Promise<unknown>) {
+async function run(action: () => Promise<unknown>, error: Ref<string>) {
   error.value = ''
   try {
     await action()
@@ -53,21 +62,23 @@ async function run(action: () => Promise<unknown>) {
 // Add
 const newName = ref('')
 async function add() {
-  if (await run(() => $fetch('/api/staff/vendors', { method: 'POST', body: { name: newName.value } }))) newName.value = ''
+  if (await run(() => $fetch('/api/staff/vendors', { method: 'POST', body: { name: newName.value } }), addError)) newName.value = ''
 }
 
 // Rename (one row at a time)
 const editingId = ref<string | null>(null)
 const editName = ref('')
+watch(editingId, () => (editError.value = ''))
 function startEdit(v: { id: string; name: string }) {
   editingId.value = v.id
   editName.value = v.name
 }
 async function saveEdit() {
   const id = editingId.value
-  if (await run(() => $fetch(`/api/staff/vendors/${id}`, { method: 'PATCH', body: { name: editName.value } }))) editingId.value = null
+  if (await run(() => $fetch(`/api/staff/vendors/${id}`, { method: 'PATCH', body: { name: editName.value } }), editError)) editingId.value = null
 }
 
 // Deactivate / reactivate
-const setActive = (id: string, active: boolean) => run(() => $fetch(`/api/staff/vendors/${id}`, { method: 'PATCH', body: { active } }))
+const setActive = (id: string, active: boolean) =>
+  run(() => $fetch(`/api/staff/vendors/${id}`, { method: 'PATCH', body: { active } }), toggleError)
 </script>
