@@ -9,12 +9,14 @@ const { data: vendors } = await useFetch('/api/staff/vendors')
 useHead({ title: () => request.value?.refCode ?? 'Request' })
 
 const category = computed(() => (request.value ? CATEGORIES[request.value.category] : undefined))
-const answers = computed(() =>
-  Object.entries(request.value?.details ?? {}).map(([qid, answer]) => ({
-    question: category.value?.followUps.find((q) => q.id === qid)?.question ?? qid,
-    answer,
-  })),
-)
+// Answers in the same order as the questions in config (the database doesn't keep key order).
+const answers = computed(() => {
+  const details = request.value?.details ?? {}
+  const order = category.value?.followUps.map((q) => q.id) ?? []
+  return Object.keys(details)
+    .sort((a, b) => (order.indexOf(a) + 1 || Infinity) - (order.indexOf(b) + 1 || Infinity))
+    .map((qid) => ({ question: category.value?.followUps.find((q) => q.id === qid)?.question ?? qid, answer: details[qid] }))
+})
 // Show inactive vendors only if one is already assigned to this request.
 const vendorOptions = computed(() => vendors.value?.filter((v) => v.active || v.id === request.value?.vendorId) ?? [])
 
