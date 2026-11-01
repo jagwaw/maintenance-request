@@ -7,39 +7,28 @@ const bodySchema = z.object({
   vendorId: z.uuid().nullable().optional(), // null = unassign
 })
 
-/** Staff: change status and/or vendor. Each change is written to the history. */
+/**
+ * Staff: change status and/or vendor. The change and its history entry are saved
+ * together by the update_request database function (see 0002 migration).
+ */
 export default defineEventHandler(async (event) => {
   const staff = await requireStaff(event)
   const id = parseOr400(z.uuid(), getRouterParam(event, 'id'))
   const body = parseOr400(bodySchema, await readBody(event))
   const db = serverSupabaseServiceRole(event)
 
-  const { data: current } = await db.from('requests').select('status, vendor_id, vendors(name)').eq('id', id).maybeSingle()
-  if (!current) throw createError({ statusCode: 404, statusMessage: 'Request not found' })
-
-  const update: Record<string, unknown> = {}
-  const changes: Parameters<typeof logEvent>[1][] = []
-
-  if (body.status !== undefined && body.status !== current.status) {
-    update.status = body.status
-    changes.push({ requestId: id, actor: staff.email, type: 'status_changed', fromValue: current.status, toValue: body.status })
+  const { error } = await db.rpc('update_request', {
+    p_id: id,
+    p_actor: staff.email,
+    p_status: body.status ?? null,
+    p_set_vendor: body.vendorId !== undefined,
+    p_vendor_id: body.vendorId ?? null,
+  })
+  if (error?.message === 'not_found') throw createError({ statusCode: 404, statusMessage: 'Request not found' })
+  if (error?.message === 'bad_vendor') throw createError({ statusCode: 400, statusMessage: 'Unknown or inactive vendor' })
+  if (error) {
+    console.error('[staff/requests/patch]', error.code, error.message)
+    throw createError({ statusCode: 500, statusMessage: 'Could not update request' })
   }
-
-  if (body.vendorId !== undefined && body.vendorId !== current.vendor_id) {
-    let vendorName: string | null = null
-    if (body.vendorId) {
-      const { data: vendor } = await db.from('vendors').select('name, active').eq('id', body.vendorId).maybeSingle()
-      if (!vendor?.active) throw createError({ statusCode: 400, statusMessage: 'Unknown or inactive vendor' })
-      vendorName = vendor.name
-    }
-    update.vendor_id = body.vendorId
-    changes.push({ requestId: id, actor: staff.email, type: 'assigned', fromValue: (current.vendors as any)?.name ?? null, toValue: vendorName })
-  }
-
-  if (!changes.length) return { ok: true }
-
-  const { error } = await db.from('requests').update(update).eq('id', id)
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not update request' })
-  for (const change of changes) await logEvent(event, change)
   return { ok: true }
 })

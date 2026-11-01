@@ -168,5 +168,8 @@ for f in $(git ls-files server/api); do if grep -qE "readBody|getQuery|getRouter
 git grep -n "website" -- components/RequestForm.vue server/api/requests/index.post.ts
 
 # Rule 10 — no string-built SQL. Expect: nothing.
-git grep -nE "\.rpc\(|sql\`|\.query\(|execute\(" -- server scripts pages components
+git grep -nE "sql\`|\.query\(|execute\(" -- server scripts pages components
+# …and rpc only calls the fixed functions from supabase/migrations, with named parameters.
+# Expect: only update_request / create_request.
+git grep -n "\.rpc(" -- server scripts pages components
 ```
