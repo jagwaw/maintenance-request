@@ -20,11 +20,16 @@ export default defineEventHandler(async (event) => {
 
   // Photos live in a private bucket: hand out links that expire, generated per view.
   const paths = r.request_photos.map((p: { storage_path: string }) => p.storage_path)
+  // If signing fails, still show the request — just flag that the photos didn't load.
   let photoUrls: string[] = []
+  let photosError = false
   if (paths.length) {
     const { data: signed, error: signErr } = await db.storage.from('request-photos').createSignedUrls(paths, PHOTO_URL_SECONDS)
-    if (signErr) throw serverError('staff/request/photos', signErr, 'Could not load photos')
-    photoUrls = signed.map((s) => s.signedUrl).filter((url): url is string => Boolean(url))
+    photoUrls = signed?.map((s) => s.signedUrl).filter((url): url is string => Boolean(url)) ?? []
+    if (signErr || photoUrls.length < paths.length) {
+      photosError = true
+      console.error('[staff/request/photos]', signErr?.message ?? `${paths.length - photoUrls.length} of ${paths.length} photo links failed`)
+    }
   }
 
   return {
@@ -49,6 +54,7 @@ export default defineEventHandler(async (event) => {
     status: r.status as string,
     vendorId: (r.vendors?.id ?? null) as string | null,
     photoUrls,
+    photosError,
     events: r.request_events as { id: string; actor: string; type: string; from_value: string | null; to_value: string | null; note: string | null; created_at: string }[],
   }
 })

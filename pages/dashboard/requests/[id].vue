@@ -57,7 +57,8 @@
                   <img :src="url" :alt="`Photo ${i + 1}`" class="h-32 w-32 rounded object-cover" />
                 </a>
               </div>
-              <p v-else class="mt-2 text-sm text-gray-500">No photos.</p>
+              <p v-if="request.photosError" role="alert" class="mt-2 text-sm text-red-700">Photos couldn't load. Refresh to try again.</p>
+              <p v-else-if="!request.photoUrls.length" class="mt-2 text-sm text-gray-500">No photos.</p>
               <p v-if="request.photoUrls.length" class="mt-2 text-xs text-gray-500">Photo links expire after 10 minutes — refresh the page for new ones.</p>
             </section>
           </div>
