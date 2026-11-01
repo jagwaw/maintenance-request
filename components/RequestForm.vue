@@ -10,7 +10,11 @@
 
     <div>
       <label class="label" for="property">Property</label>
-      <select id="property" v-model="form.propertyId" class="input" required>
+      <div v-if="propertiesError" role="alert" class="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+        We couldn't load the property list. Please refresh the page.
+        <button type="button" class="ml-1 font-medium underline" @click="() => refreshProperties()">Try again</button>
+      </div>
+      <select v-else id="property" v-model="form.propertyId" class="input" required>
         <option value="" disabled>Choose your property</option>
         <option v-for="p in properties" :key="p.id" :value="p.id">{{ p.name }}</option>
       </select>
@@ -144,7 +148,7 @@ const props = defineProps<{
 // Every source except the online form itself.
 const staffSources = Object.fromEntries(Object.entries(SOURCES).filter(([key]) => key !== 'form'))
 
-const { data: properties } = await useFetch('/api/properties')
+const { data: properties, error: propertiesError, refresh: refreshProperties } = await useFetch('/api/properties')
 
 const form = reactive({
   source: '', // staff only
