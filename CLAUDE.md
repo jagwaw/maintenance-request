@@ -128,3 +128,45 @@ status, lease_end). Idempotent (safe to run twice). Rules:
 - Keep components small; no state library unless needed (`useState`/composables are enough).
 - After each feature, tell me how to test it manually, including one negative test
   (e.g. calling a staff API without a session returns 401).
+
+## Security checks (run before submitting)
+
+One check per security rule. Run from the repo root; each should print the expected result.
+
+```bash
+# Rule 1 — browser code never queries Supabase tables or storage. Expect: nothing.
+git grep -nE "\.from\(['\"]|\.storage\b" -- pages components middleware utils app.vue
+# …and only uses the Supabase client for auth. Expect: nothing.
+git grep -n "supabase\." -- pages components | grep -v "auth\."
+
+# Rule 2 — RLS on every table, no policies. Expect: tables = rls, policies = 0.
+echo "tables=$(grep -c '^create table' supabase/migrations/0001_init.sql) rls=$(grep -c 'enable row level security' supabase/migrations/0001_init.sql) policies=$(grep -ci 'create policy' supabase/migrations/0001_init.sql)"
+
+# Rule 3 — service key never in browser code or public config. Expect: nothing.
+git grep -nE "SERVICE_KEY|serviceKey|serverSupabaseServiceRole" -- pages components middleware utils app.vue nuxt.config.ts
+# …and .env was never committed. Expect: nothing.
+git log --all --oneline -- .env
+
+# Rule 4/5 — only two public routes, and submit returns just the reference code.
+git ls-files server/api | grep -v '^server/api/staff/'   # Expect: properties.get.ts, requests/index.post.ts
+grep -n "return" server/api/requests/index.post.ts        # Expect: only { refCode } (real and honeypot)
+
+# Rule 6 — every staff route starts with requireStaff. Expect: nothing.
+for f in $(git ls-files 'server/api/staff/*'); do grep -q "await requireStaff(event)" "$f" || echo "MISSING: $f"; done
+
+# Rule 7 — private bucket, 10-minute signed URLs. Expect: one line each.
+grep -n "'request-photos', 'request-photos', false" supabase/migrations/0001_init.sql
+grep -n "10 \* 60" "server/api/staff/requests/[id]/index.get.ts"
+
+# Rule 8 — max 3 photos, MIME + magic-byte check. Expect: one line each.
+grep -n "MAX_PHOTOS = 3" config/maintenance.ts
+grep -n "isAllowedImage" server/utils/requests.ts
+
+# Rule 9 — every route that reads input validates it with Zod. Expect: nothing.
+for f in $(git ls-files server/api); do if grep -qE "readBody|getQuery|getRouterParam|readRequestBody" "$f" && ! grep -q "parseOr400" "$f"; then echo "MISSING: $f"; fi; done
+# …and the honeypot exists. Expect: matches in both files.
+git grep -n "website" -- components/RequestForm.vue server/api/requests/index.post.ts
+
+# Rule 10 — no string-built SQL. Expect: nothing.
+git grep -nE "\.rpc\(|sql\`|\.query\(|execute\(" -- server scripts pages components
+```
