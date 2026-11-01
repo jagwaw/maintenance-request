@@ -38,7 +38,7 @@ export default defineEventHandler(async (event): Promise<RequestRow[]> => {
   if (filters.category) query = query.eq('category', filters.category)
 
   const { data, error } = await query
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load requests' })
+  if (error) throw serverError('staff/requests', error, 'Could not load requests')
 
   return data.map((r: any) => ({
     id: r.id,

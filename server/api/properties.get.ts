@@ -8,6 +8,6 @@ export default defineEventHandler(async (event) => {
     .select('id, name, units(id, label)')
     .order('name')
     .order('label', { referencedTable: 'units' })
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load properties' })
+  if (error) throw serverError('properties', error, 'Could not load properties')
   return data
 })

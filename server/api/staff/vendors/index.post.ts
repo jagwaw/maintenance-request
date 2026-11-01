@@ -11,6 +11,6 @@ export default defineEventHandler(async (event) => {
 
   const db = serverSupabaseServiceRole(event)
   const { data, error } = await db.from('vendors').insert({ name }).select('id, name, active').single()
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not add vendor' })
+  if (error) throw serverError('staff/vendors/post', error, 'Could not add vendor')
   return data
 })

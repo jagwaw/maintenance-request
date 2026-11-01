@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const db = serverSupabaseServiceRole(event)
   const { data, error } = await db.from('vendors').update(body).eq('id', id).select('id, name, active').maybeSingle()
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not update vendor' })
+  if (error) throw serverError('staff/vendors/patch', error, 'Could not update vendor')
   if (!data) throw createError({ statusCode: 404, statusMessage: 'Vendor not found' })
   return data
 })

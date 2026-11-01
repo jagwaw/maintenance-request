@@ -33,9 +33,10 @@ async function signIn() {
     if (authError) throw new Error('Wrong email or password.')
     try {
       await $fetch('/api/staff/me') // a valid login isn't enough — the email must be in the staff table
-    } catch {
+    } catch (e: any) {
       await supabase.auth.signOut()
-      throw new Error("This account doesn't have staff access.")
+      // Only a 403 means "not staff"; anything else is a server problem worth retrying.
+      throw new Error(e?.statusCode === 403 ? "This account doesn't have staff access." : "Couldn't check your access. Please try again.")
     }
     await navigateTo('/dashboard')
   } catch (e: any) {

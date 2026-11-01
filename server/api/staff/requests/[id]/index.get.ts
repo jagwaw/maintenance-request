@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     .eq('id', id)
     .order('created_at', { referencedTable: 'request_events' })
     .maybeSingle()
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not load request' })
+  if (error) throw serverError('staff/request', error, 'Could not load request')
   if (!r) throw createError({ statusCode: 404, statusMessage: 'Request not found' })
 
   // Photos live in a private bucket: hand out links that expire, generated per view.
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   let photoUrls: string[] = []
   if (paths.length) {
     const { data: signed, error: signErr } = await db.storage.from('request-photos').createSignedUrls(paths, PHOTO_URL_SECONDS)
-    if (signErr) throw createError({ statusCode: 500, statusMessage: 'Could not load photos' })
+    if (signErr) throw serverError('staff/request/photos', signErr, 'Could not load photos')
     photoUrls = signed.map((s) => s.signedUrl).filter((url): url is string => Boolean(url))
   }
 

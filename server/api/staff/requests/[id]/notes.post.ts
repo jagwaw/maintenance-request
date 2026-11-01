@@ -10,7 +10,8 @@ export default defineEventHandler(async (event) => {
   const { note } = parseOr400(bodySchema, await readBody(event))
 
   const db = serverSupabaseServiceRole(event)
-  const { data: exists } = await db.from('requests').select('id').eq('id', id).maybeSingle()
+  const { data: exists, error } = await db.from('requests').select('id').eq('id', id).maybeSingle()
+  if (error) throw serverError('staff/notes', error, 'Could not add note')
   if (!exists) throw createError({ statusCode: 404, statusMessage: 'Request not found' })
 
   await logEvent(event, { requestId: id, actor: staff.email, type: 'note_added', note })

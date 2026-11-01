@@ -17,5 +17,5 @@ export async function logEvent(
     to_value: entry.toValue ?? null,
     note: entry.note ?? null,
   })
-  if (error) throw createError({ statusCode: 500, statusMessage: 'Could not save history' })
+  if (error) throw serverError('logEvent', error, 'Could not save history')
 }

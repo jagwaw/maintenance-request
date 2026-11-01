@@ -35,14 +35,15 @@ export async function createRequest(
 ) {
   const db = serverSupabaseServiceRole(event)
 
-  const { data: unit } = await db.from('units').select('id').eq('id', input.unitId).maybeSingle()
+  const { data: unit, error: unitErr } = await db.from('units').select('id').eq('id', input.unitId).maybeSingle()
+  if (unitErr) throw serverError('createRequest/unit', unitErr, 'Could not save request')
   if (!unit) throw createError({ statusCode: 400, statusMessage: 'Invalid input' })
 
   // Contact matching: email OR phone matches any tenant on this unit.
   const email = normalizeEmail(input.contactEmail)
   const phone = normalizePhone(input.contactPhone)
   const { data: tenants, error: tErr } = await db.from('tenants').select('id, email, phone_digits').eq('unit_id', unit.id)
-  if (tErr) throw createError({ statusCode: 500, statusMessage: 'Could not save request' })
+  if (tErr) throw serverError('createRequest/tenants', tErr, 'Could not save request')
   const match = tenants.find((t) => (email && t.email === email) || (phone && t.phone_digits?.slice(-10) === phone))
 
   // Upload photos first so a failed upload doesn't leave a request without its photos.
@@ -51,7 +52,7 @@ export async function createRequest(
   for (const photo of photos) {
     const path = `${requestId}/${randomUUID()}.${photoExtension(photo.type!)}`
     const { error } = await db.storage.from('request-photos').upload(path, photo.data, { contentType: photo.type })
-    if (error) throw createError({ statusCode: 500, statusMessage: 'Could not upload photos' })
+    if (error) throw serverError('createRequest/upload', error, 'Could not upload photos')
     paths.push(path)
   }
 
@@ -78,13 +79,13 @@ export async function createRequest(
       created_by_staff_id: opts.createdByStaffId ?? null,
     })
     if (!error) refCode = candidate
-    else if (error.code !== '23505') throw createError({ statusCode: 500, statusMessage: 'Could not save request' })
+    else if (error.code !== '23505') throw serverError('createRequest/insert', error, 'Could not save request')
   }
-  if (!refCode) throw createError({ statusCode: 500, statusMessage: 'Could not save request' })
+  if (!refCode) throw serverError('createRequest/insert', { message: 'no unique reference code after 5 attempts' }, 'Could not save request')
 
   if (paths.length) {
     const { error } = await db.from('request_photos').insert(paths.map((storage_path) => ({ request_id: requestId, storage_path })))
-    if (error) throw createError({ statusCode: 500, statusMessage: 'Could not save photos' })
+    if (error) throw serverError('createRequest/photos', error, 'Could not save photos')
   }
 
   await logEvent(event, { requestId, actor: opts.actor, type: 'created', toValue: 'new' })

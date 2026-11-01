@@ -11,7 +11,8 @@ export async function requireStaff(event: H3Event) {
   if (!email) throw createError({ statusCode: 401, statusMessage: 'Not signed in' })
 
   const db = serverSupabaseServiceRole(event)
-  const { data: staff } = await db.from('staff').select('id, email, name').eq('email', email).maybeSingle()
+  const { data: staff, error } = await db.from('staff').select('id, email, name').eq('email', email).maybeSingle()
+  if (error) throw serverError('requireStaff', error, 'Could not check staff access')
   if (!staff) throw createError({ statusCode: 403, statusMessage: 'Not a staff account' })
   return staff
 }
