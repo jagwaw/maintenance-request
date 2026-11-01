@@ -150,7 +150,8 @@ Before building, I asked the owner six questions (tenant identity, phone/walk-in
 - **Staff accounts are managed in Supabase**, not on the website.
 - **Some iPhone photos (HEIC format) may not upload from a desktop Chrome browser.** They work from the iPhone itself.
 - **If a photo upload fails halfway**, the tenant sees an error and can try again, but an unused photo may be left in storage. It's private and harmless, just takes a little space.
-- **Changes and their history entry aren't saved in one database transaction yet.** If saving the history fails, the change is kept without a history line. Next step: move these writes into a Postgres function so they succeed or fail together.
+- **Status and vendor changes are saved together with their history entry, in one database transaction. Creating a request isn't yet:** if saving fails partway, the tenant may submit again and staff could see a duplicate. Next step: the same approach for request creation.
+- **Vendor changes (add, rename, deactivate) aren't recorded in the history;** only request changes are.
 - **Very large photo sets can exceed the host's 4.5 MB upload limit, which shows a generic error.** Photos are resized on the phone first, so this is unlikely.
 - **Only the spreadsheet import has automated tests** (`npm test`). The rest of the app was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
 
@@ -184,7 +185,7 @@ I built this with **Claude Code**, an AI coding assistant, working step by step 
 
 Built with Nuxt 3, Tailwind CSS and Supabase. Hosted on Vercel.
 
-1. Create a Supabase project and run `supabase/migrations/0001_init.sql` in its SQL editor. Turn off public sign-ups (Authentication → Sign In / Providers).
+1. Create a Supabase project and, in its SQL editor, run `supabase/migrations/0001_init.sql`, then `supabase/migrations/0002_request_transactions.sql`. Turn off public sign-ups (Authentication → Sign In / Providers).
 2. Copy `.env.example` to `.env` and fill in the Supabase URL, anon key and service role key.
 3. Use Node 22 (`nvm use`), then `npm install`.
 4. Import units: `npm run import:units` (add `-- --dry-run` to preview the report).
