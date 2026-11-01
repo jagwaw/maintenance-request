@@ -153,7 +153,7 @@ I built this with **Claude Code**, an AI coding assistant, working step by step 
 **What AI wrote:** most of the code — the pages, the server routes, the database setup, the spreadsheet import script — and the first draft of this README and the flow charts.
 
 **What I did:**
-- Wrote the project brief: the features, the data model and the security rules the AI had to follow.
+- Planned the project brief (features, data model, security rules) with an AI assistant, based on the owner's answers — see CLAUDE.md.
 - Asked the owner the questions above and turned the answers into decisions.
 - Made the product and design calls along the way — for example the landing page, giving the thank-you page its own link, moving staff pages under `/dashboard`, how errors show next to the field that caused them, and the loading indicators.
 - Reviewed the code and tested every feature by hand in the browser and in Supabase, including the failure cases, and asked for fixes when something was off (e.g. the order of follow-up answers, the emergency notice position, error placement on the vendors page).
