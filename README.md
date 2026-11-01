@@ -127,6 +127,8 @@ Most of these were confirmed with the owner before building (✔).
 
 ## Questions I'd ask the owner next
 
+Before building, I asked the owner six questions (tenant identity, phone/walk-in requests, emergency number, vendors, roles, notifications). Their answers are the ✔ items under Assumptions. These are the follow-ups I'd ask next.
+
 1. Should tenants get an email or text confirming their request, with the reference code?
 2. Who can mark a request **Done** — any staff member, or only after the tenant confirms it's fixed?
 3. Should a vendor automatically receive the request details when they're assigned?
@@ -135,6 +137,7 @@ Most of these were confirmed with the owner before building (✔).
 6. Should tenants be able to add information or cancel a request after sending it?
 7. How long should requests and photos be kept?
 8. Who keeps the unit and tenant list up to date when people move in or out?
+9. Should 'can't secure the unit' (broken lock or door) count as urgent, with the emergency notice shown?
 
 ---
 
