@@ -91,6 +91,21 @@ The office's spreadsheet of units and tenants (`data/sample_units.csv`) is loade
 
 It cleans up obvious things (extra spaces, "Bayview flats" vs "Bayview Flats", duplicate rows) but **never changes tenant details on its own**. Anything that looks wrong — like `gmial.com`, a phone number that's too short, or an impossible date — is kept as-is and listed in a report so someone can fix it properly.
 
+### What the import found in sample_units.csv
+
+From `npm run import:units -- --dry-run` (row numbers count the header as row 1):
+
+| Row | Field | Problem | Action |
+|---|---|---|---|
+| 5 | email | invalid format "denise.carter@gmail" | kept as given |
+| 8 | email | likely typo "luis.herrera@gmial.com" | kept as given (not corrected) |
+| 10 | status | unit is vacant but a tenant is listed | imported as given |
+| 12 | (row) | exact duplicate of row 11 | row dropped |
+| 13 | email | likely typo "marcuslee.fl@hotmial.com" | kept as given (not corrected) |
+| 14 | phone | only 6 digits | kept as given |
+| 15 | lease_end | invalid date "2027-13-01" | set to empty |
+| 16 | email | invalid format "jenna moore@yahoo.com" | kept as given |
+
 ---
 
 ## Assumptions
