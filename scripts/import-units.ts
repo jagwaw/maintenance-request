@@ -9,6 +9,7 @@
  * so running it twice changes nothing.
  */
 import { readFileSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
 import { parse } from 'csv-parse/sync'
 import { createClient } from '@supabase/supabase-js'
 
@@ -192,7 +193,10 @@ async function main() {
   else console.log(`Dry run: ${rows.length} rows ready, nothing written.`)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+// Only run when executed directly (npm run import:units), not when imported by tests.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

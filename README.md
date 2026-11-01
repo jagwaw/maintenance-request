@@ -152,7 +152,7 @@ Before building, I asked the owner six questions (tenant identity, phone/walk-in
 - **If a photo upload fails halfway**, the tenant sees an error and can try again, but an unused photo may be left in storage. It's private and harmless, just takes a little space.
 - **Changes and their history entry aren't saved in one database transaction yet.** If saving the history fails, the change is kept without a history line. Next step: move these writes into a Postgres function so they succeed or fail together.
 - **Very large photo sets can exceed the host's 4.5 MB upload limit, which shows a generic error.** Photos are resized on the phone first, so this is unlikely.
-- **No automated tests yet.** Every feature was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
+- **Only the spreadsheet import has automated tests** (`npm test`). The rest of the app was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
 
 ---
 
