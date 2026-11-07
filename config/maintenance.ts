@@ -18,6 +18,8 @@ export type FollowUp = {
 
 export type Category = {
   label: string
+  /** Icon on the category button in the form: a name from components/Icon.vue. */
+  icon?: string
   followUps: FollowUp[]
   /** Safe things to try before submitting. */
   selfCheck?: string[]
@@ -26,6 +28,7 @@ export type Category = {
 export const CATEGORIES: Record<string, Category> = {
   ac_heating: {
     label: 'AC / heating',
+    icon: 'snowflake',
     followUps: [
       { id: 'symptom', question: 'Is it blowing warm air, or not turning on at all?', type: 'select', options: ['Blowing warm air', 'Not turning on at all', 'Something else'] },
       { id: 'filter', question: 'When did you last change the filter?', type: 'select', options: ['In the last 3 months', 'More than 3 months ago', "I don't know"] },
@@ -38,6 +41,7 @@ export const CATEGORIES: Record<string, Category> = {
   },
   plumbing: {
     label: 'Plumbing',
+    icon: 'droplets',
     followUps: [
       { id: 'leaking_now', question: 'Is water leaking right now?', type: 'select', options: ['Yes', 'No'], emergencyIf: 'Yes' },
       { id: 'fixture', question: 'Which fixture?', type: 'select', options: ['Kitchen sink', 'Bathroom sink', 'Toilet', 'Shower / tub', 'Water heater', 'Other'] },
@@ -45,6 +49,7 @@ export const CATEGORIES: Record<string, Category> = {
   },
   electrical: {
     label: 'Electrical',
+    icon: 'zap',
     followUps: [
       { id: 'scope', question: 'Is it one outlet/light, a whole room, or the whole unit?', type: 'select', options: ['One outlet or light', 'A whole room', 'The whole unit'] },
     ],
@@ -55,6 +60,7 @@ export const CATEGORIES: Record<string, Category> = {
   },
   pest: {
     label: 'Pest',
+    icon: 'bug',
     followUps: [
       { id: 'pest_type', question: 'What kind of pest?', type: 'select', options: ['Ants', 'Roaches', 'Rodents', 'Bed bugs', 'Other'] },
       { id: 'where', question: 'Where have you seen them?', type: 'text' },
@@ -62,18 +68,21 @@ export const CATEGORIES: Record<string, Category> = {
   },
   appliance: {
     label: 'Appliance',
+    icon: 'refrigerator',
     followUps: [
       { id: 'appliance', question: 'Which appliance?', type: 'select', options: ['Fridge', 'Stove / oven', 'Dishwasher', 'Washer', 'Dryer', 'Microwave', 'Other'] },
     ],
   },
   door_lock: {
     label: 'Door / lock',
+    icon: 'key-round',
     followUps: [
       { id: 'locked_out', question: 'Are you locked out or unable to secure the unit?', type: 'select', options: ['Yes', 'No'] },
     ],
   },
   other: {
     label: 'Other',
+    icon: 'circle-ellipsis',
     followUps: [],
   },
 }
@@ -85,6 +94,14 @@ export const STATUSES: Record<string, string> = {
   done: 'Done',
 }
 
+/** Badge colour for each status. A status with no colour here shows as gray. */
+export const STATUS_TONES: Record<string, 'blue' | 'violet' | 'amber' | 'green'> = {
+  new: 'blue',
+  scheduled: 'violet',
+  waiting_on_vendor: 'amber',
+  done: 'green',
+}
+
 export const SOURCES: Record<string, string> = {
   form: 'Online form',
   phone: 'Phone',
@@ -93,3 +110,9 @@ export const SOURCES: Record<string, string> = {
 }
 
 export const MAX_PHOTOS = 3
+
+/** Requests per page on the dashboard. 12 fills whole rows at 1, 2 and 3 columns. */
+export const PAGE_SIZE = 12
+
+/** Every date and time in the app is shown in this time zone (US Eastern). */
+export const TIME_ZONE = 'America/New_York'

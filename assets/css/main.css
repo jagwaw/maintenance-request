@@ -3,8 +3,23 @@
 @tailwind utilities;
 
 @layer components {
-  .label { @apply mb-1 block text-sm font-medium text-gray-700; }
-  .input { @apply block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600; }
-  .btn-primary { @apply rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 disabled:opacity-50; }
-  .btn-secondary { @apply rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-800 hover:bg-gray-50; }
+  .label { @apply mb-1.5 block font-medium text-gray-800; }
+  /* text-base (16px) stops iPhones zooming in on focus; min-h-12 (48px) is a comfortable tap size. */
+  .input { @apply block min-h-12 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:text-gray-500; }
+  /* Our own dropdown arrow: the browser's can't be positioned and sits too close to the edge. */
+  select.input {
+    @apply appearance-none bg-no-repeat pr-11;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+  }
+  select.input:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+  .btn-primary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 py-2 text-center font-semibold text-white hover:bg-blue-800 active:bg-blue-900 disabled:opacity-50; }
+  .btn-secondary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-center font-semibold text-gray-800 hover:bg-gray-50 active:bg-gray-100; }
+  .card { @apply rounded-xl border border-gray-200 bg-white p-4 shadow-sm; }
+  /* A radio button styled as a big tappable option: <label class="choice"><input class="sr-only" type="radio" /> Text</label> */
+  .choice { @apply flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-center font-medium active:bg-gray-100 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-900 has-[:checked]:ring-1 has-[:checked]:ring-blue-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-600; }
+  .tap-link { @apply inline-flex min-h-11 items-center gap-1 font-medium text-blue-700 hover:underline; }
 }
