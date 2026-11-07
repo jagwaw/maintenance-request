@@ -1,11 +1,11 @@
 <template>
-  <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
+  <main class="mx-auto max-w-xl space-y-4 p-4 pb-16">
     <h1 class="text-2xl font-semibold">Maintenance request</h1>
     <EmergencyNotice />
     <RequestForm :submit="submit" />
 
-    <p class="text-center text-sm">
-      <NuxtLink to="/login" class="text-gray-500 hover:underline">Staff sign in</NuxtLink>
+    <p class="text-center">
+      <NuxtLink to="/login" class="inline-flex min-h-11 items-center text-sm text-gray-600 hover:underline">Staff sign in</NuxtLink>
     </p>
   </main>
 </template>

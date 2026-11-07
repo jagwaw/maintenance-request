@@ -1,7 +1,8 @@
 <template>
-  <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
+  <main class="mx-auto max-w-md space-y-4 p-4 pb-16">
+    <NuxtLink to="/" class="tap-link"><Icon name="arrow-left" :size="18" /> Back to home</NuxtLink>
     <h1 class="text-2xl font-semibold">Staff sign in</h1>
-    <form class="space-y-5" @submit.prevent="signIn">
+    <form class="card space-y-4" @submit.prevent="signIn">
       <div>
         <label class="label" for="email">Email</label>
         <input id="email" v-model="email" type="email" class="input" required autocomplete="username" />
@@ -13,6 +14,7 @@
       <p v-if="error" role="alert" class="text-red-700">{{ error }}</p>
       <button type="submit" class="btn-primary w-full" :disabled="loading">{{ loading ? 'Signing in…' : 'Sign in' }}</button>
     </form>
+    <p class="text-center text-sm text-gray-600">Forgot your password? Ask the office.</p>
   </main>
 </template>
 
