@@ -109,16 +109,23 @@ status, lease_end). Idempotent (safe to run twice). Rules:
 
 ## Pages
 
-- `/` — tenant form, mobile-first: emergency notice → property → unit → name, email,
+- `/` — landing page: emergency notice, link to the tenant form, staff sign-in link.
+- `/request` — tenant form, mobile-first: emergency notice → property → unit → name, email,
   phone → category → follow-ups → self-check (if any) → description → photos →
-  permission to enter (+ optional pets, best times) → submit → reference code screen.
-- `/staff/login` — Supabase email/password.
-- `/staff` — table of requests; filters: property, status, category; badges for
-  unverified contact and vacant unit; "New request" button.
-- `/staff/requests/new` — same form fields + source (phone/text/in person).
-- `/staff/requests/[id]` — details, follow-up answers, photos (signed URLs), change
-  status, assign vendor, add note, full history timeline (who, what, when).
-- `/staff/vendors` — list, add, rename, deactivate.
+  permission to enter (+ optional pets, best times) → submit → reference code screen
+  (`/request/submitted/[ref]`).
+- `/login` — Supabase email/password, for staff.
+- `/dashboard` — request cards (not a table: it's used on phones, which have no hover),
+  newest first, paginated on the server; filters: property, status, category, contact;
+  badges for unverified contact and vacant unit; "New request" button.
+- `/dashboard/requests/new` — same form fields + source (phone/text/in person).
+- `/dashboard/requests/[id]` — details, follow-up answers, photos (signed URLs), change
+  status, assign vendor, add note, history timeline (who, what, when), newest 5 first
+  with a button to show all.
+- `/dashboard/vendors` — list, add, rename, deactivate.
+
+Times display in US Eastern (`TIME_ZONE` in `config/maintenance.ts`). Field rules live in
+`utils/contact.ts`, shared by the forms and the server. Phone numbers are US/Canada only.
 
 ## Working rules
 

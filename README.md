@@ -46,7 +46,7 @@ flowchart TD
 
 | Page | What you can do |
 |---|---|
-| **Requests** | See every request, newest first. Filter by property, status or problem type. |
+| **Requests** | See every request, newest first, 12 to a page. Filter by property, status, problem type or verified/unverified contact. |
 | **Request details** | See everything the tenant sent, including photos. Change the status, assign a vendor, add notes. |
 | **New request** | Log a request that came in by phone, text or in person. |
 | **Vendors** | Add, rename or deactivate vendors (plumber, electrician, pest control…). |
@@ -120,6 +120,8 @@ Most of these were confirmed with the owner before building (✔).
 - ✔ **One staff role** — every staff member can see and change everything, and every change is recorded.
 - ✔ **No email or text notifications** in this first version.
 - **Staff accounts are created by the office**, not by signing up on the website.
+- **Phone numbers must be US or Canada numbers.** A tenant with a foreign number can give an email instead, since only one of the two is required.
+- **Times are shown in US Eastern**, whatever time zone the viewer is in.
 - **Up to 3 photos** per request is enough to show the problem.
 - **Requests for vacant units are allowed** (e.g. a neighbour reporting a leak) but flagged so staff notice.
 
@@ -138,6 +140,8 @@ Before building, I asked the owner six questions (tenant identity, phone/walk-in
 7. How long should requests and photos be kept?
 8. Who keeps the unit and tenant list up to date when people move in or out?
 9. Should 'can't secure the unit' (broken lock or door) count as urgent, with the emergency notice shown?
+10. The thank-you page says "The office will review your request and contact you." Is that the right promise, and should it include a timeframe?
+11. Is there a non-emergency number or email tenants can use to ask about a request? The app only lists the emergency line.
 
 ---
 
@@ -152,8 +156,8 @@ Before building, I asked the owner six questions (tenant identity, phone/walk-in
 - **If a photo upload fails halfway**, the tenant sees an error and can try again, but an unused photo may be left in storage. It's private and harmless, just takes a little space.
 - **Status and vendor changes are saved together with their history entry, in one database transaction. Creating a request isn't yet:** if saving fails partway, the tenant may submit again and staff could see a duplicate. Next step: the same approach for request creation.
 - **Vendor changes (add, rename, deactivate) aren't recorded in the history;** only request changes are.
-- **Very large photo sets can exceed the host's 4.5 MB upload limit, which shows a generic error.** Photos are resized on the phone first, so this is unlikely.
-- **Only the spreadsheet import has automated tests** (`npm test`). The rest of the app was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
+- **Very large photo sets can exceed the host's 4.5 MB upload limit, which asks the tenant to try fewer photos.** Photos are resized on the phone first, so this is unlikely.
+- **Only the spreadsheet import, field validation, date formatting and page calculations have automated tests** (`npm test`). The rest of the app was tested by hand, including the negative cases (wrong logins, bad inputs, expired photo links).
 
 ---
 
