@@ -2,9 +2,11 @@
   <div>
     <StaffHeader />
     <main class="mx-auto max-w-xl space-y-6 p-4 pb-16">
-      <NuxtLink to="/dashboard" class="text-sm text-blue-700 hover:underline">← All requests</NuxtLink>
-      <h1 class="text-xl font-semibold">New request</h1>
-      <p class="text-sm text-gray-600">For requests that came in by phone, text or in person.</p>
+      <NuxtLink to="/dashboard" class="tap-link"><Icon name="arrow-left" :size="18" /> All requests</NuxtLink>
+      <div>
+        <h1 class="text-2xl font-semibold">New request</h1>
+        <p class="mt-1 text-gray-600">For requests that came in by phone, text or in person.</p>
+      </div>
       <RequestForm :submit="submit" staff />
     </main>
   </div>
