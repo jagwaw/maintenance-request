@@ -1,19 +1,25 @@
 import { z } from 'zod'
 import { CATEGORIES } from '~~/config/maintenance'
-import { emailError, phoneError } from '~~/utils/contact'
+import { emailError, nameError, phoneError, textError } from '~~/utils/contact'
 
-const optionalText = (max: number) => z.string().trim().max(max).optional().transform((v) => v || null)
+/** Shown to people as-is by the forms, so it says what to do. */
+export const INVALID_INPUT_MESSAGE = 'Something in the form needs fixing. Check the details and try again.'
+
+/** Free text limited to letters, numbers and everyday punctuation. May be empty. */
+export const plainText = (max: number) => z.string().trim().max(max).refine((v) => !textError(v), 'Contains characters that are not allowed')
+
+const optionalText = (max: number) => plainText(max).optional().transform((v) => v || null)
 
 /** Fields shared by the tenant form and the staff "new request" form. */
 export const requestFieldsSchema = z
   .object({
     unitId: z.uuid(),
-    contactName: z.string().trim().min(1).max(100),
+    contactName: z.string().trim().min(1).max(100).refine((n) => !nameError(n), 'Invalid name'),
     contactEmail: z.string().trim().toLowerCase().refine((e) => !emailError(e), 'Invalid email').optional(),
     contactPhone: z.string().trim().max(30).refine((p) => !phoneError(p), 'Invalid phone').optional(),
     category: z.string().refine((c) => c in CATEGORIES, 'Unknown category'),
-    details: z.record(z.string(), z.string().trim().max(500)).default({}),
-    description: z.string().trim().min(1).max(2000),
+    details: z.record(z.string(), plainText(500)).default({}),
+    description: plainText(2000).min(1),
     permissionToEnter: z.boolean(),
     pets: optionalText(200),
     bestTimes: optionalText(200),
@@ -40,7 +46,7 @@ export function parseOr400<T extends z.ZodType>(schema: T, data: unknown): z.inf
   if (!result.success)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Invalid input',
+      statusMessage: INVALID_INPUT_MESSAGE,
       data: result.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
     })
   return result.data

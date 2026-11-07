@@ -1,8 +1,7 @@
 import type { H3Event } from 'h3'
-import { z } from 'zod'
 import { serverSupabaseServiceRole } from '#supabase/server'
 
-export const vendorNameSchema = z.string().trim().min(1, 'Name is required').max(100)
+export const vendorNameSchema = plainText(100).min(1, 'Name is required')
 
 /** 409 if another vendor already has this name (case-insensitive). */
 export async function assertVendorNameFree(event: H3Event, name: string, exceptId?: string) {

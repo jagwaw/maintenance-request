@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { serverSupabaseServiceRole } from '#supabase/server'
 
-const bodySchema = z.object({ note: z.string().trim().min(1).max(2000) })
+const bodySchema = z.object({ note: plainText(2000).min(1) })
 
 /** Staff: add a note. Notes are history events, so they appear in the timeline. */
 export default defineEventHandler(async (event) => {

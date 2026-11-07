@@ -12,7 +12,7 @@ export async function readRequestBody(event: H3Event) {
   try {
     data = JSON.parse(dataPart?.data.toString('utf8') ?? '')
   } catch {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid input' })
+    throw createError({ statusCode: 400, statusMessage: INVALID_INPUT_MESSAGE })
   }
 
   const photos = parts.filter((p) => p.name === 'photos')
@@ -37,7 +37,7 @@ export async function createRequest(
 
   const { data: unit, error: unitErr } = await db.from('units').select('id').eq('id', input.unitId).maybeSingle()
   if (unitErr) throw serverError('createRequest/unit', unitErr, 'Could not save request')
-  if (!unit) throw createError({ statusCode: 400, statusMessage: 'Invalid input' })
+  if (!unit) throw createError({ statusCode: 400, statusMessage: INVALID_INPUT_MESSAGE })
 
   // Contact matching: email OR phone matches any tenant on this unit.
   const email = normalizeEmail(input.contactEmail)
